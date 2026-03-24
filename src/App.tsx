@@ -22,8 +22,7 @@ import {
   Edit3,
   Clock,
   Search,
-  UploadCloud,
-  Facebook
+  UploadCloud
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -77,7 +76,8 @@ const NovelSimulation = () => {
   const [tasks, setTasks] = React.useState(0);
   const [activeStep, setActiveStep] = React.useState(0);
   const [isComplete, setIsComplete] = React.useState(false);
-  const [publishState, setPublishState] = React.useState<'idle' | 'authorizing' | 'selecting_page' | 'authorized_pending' | 'publishing' | 'configuring' | 'success'>('idle');
+  const [publishState, setPublishState] = React.useState<'idle' | 'check_auth' | 'publishing' | 'configuring' | 'success'>('idle');
+  const [incompleteBtnText, setIncompleteBtnText] = React.useState('未完成');
 
   React.useEffect(() => {
     const timer = setInterval(() => {
@@ -112,7 +112,8 @@ const NovelSimulation = () => {
   }, []);
 
   const handlePublish = () => {
-    setPublishState('authorizing');
+    setPublishState('check_auth');
+    setIncompleteBtnText('未完成');
   };
 
   const handleGoAuthorize = () => {
@@ -234,46 +235,10 @@ const NovelSimulation = () => {
             </div>
           )}
 
-          {(publishState === 'authorizing' || publishState === 'selecting_page' || publishState === 'authorized_pending') && (
+          {publishState === 'check_auth' && (
             <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-[#1877F2] rounded-full flex items-center justify-center">
-                  <Facebook className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <div className="text-sm font-bold text-white">授权 Facebook</div>
-                  <div className="text-xs text-gray-400">发布视频需要您的社交账号授权</div>
-                </div>
-              </div>
-              
-              {publishState === 'authorizing' && (
-                <button 
-                  onClick={handleGoAuthorize}
-                  className="w-full py-2.5 bg-[#1877F2] hover:bg-[#166fe5] text-white rounded-xl text-sm font-bold transition-colors"
-                >
-                  去授权
-                </button>
-              )}
-
-              {publishState === 'selecting_page' && (
-                <div className="space-y-3">
-                  <div className="text-xs text-gray-400 mb-1">授权成功！请选择发布到的公共主页：</div>
-                  <select className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-blue-500 transition-colors">
-                    <option value="" className="bg-[#1e293b]">-- 请选择公共主页 --</option>
-                    <option value="page1" className="bg-[#1e293b]">我的短剧频道 A</option>
-                    <option value="page2" className="bg-[#1e293b]">小说推文主页 B</option>
-                    <option value="page3" className="bg-[#1e293b]">海外剧场 C</option>
-                  </select>
-                  <button 
-                    onClick={handleSelectPage}
-                    className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold transition-colors"
-                  >
-                    确认选择
-                  </button>
-                </div>
-              )}
-
-              {publishState === 'authorized_pending' && (
+              <div className="text-sm font-bold text-white mb-4 text-center">发布授权确认</div>
+              {incompleteBtnText === '未完成' ? (
                 <div className="flex gap-2">
                   <button 
                     onClick={handleAuthorized}
@@ -282,12 +247,19 @@ const NovelSimulation = () => {
                     已授权
                   </button>
                   <button 
-                    onClick={() => setPublishState('authorizing')}
+                    onClick={() => setIncompleteBtnText('去授权')}
                     className="flex-1 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-sm font-bold transition-colors"
                   >
                     未完成
                   </button>
                 </div>
+              ) : (
+                <button 
+                  onClick={() => setIncompleteBtnText('未完成')}
+                  className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold transition-colors"
+                >
+                  去授权
+                </button>
               )}
             </div>
           )}
@@ -351,7 +323,7 @@ const AuthSimulation = () => {
           </div>
           <div className="text-center">
             <div className="text-xl font-bold text-green-500 mb-1">授权成功</div>
-            <div className="text-sm text-gray-400">北斗智影系统已就绪，PolarClaw 助手已获得必要权限</div>
+            <div className="text-sm text-gray-400">北斗智影系统已就绪，PolarClaw 已获得必要权限</div>
           </div>
         </div>
         <div className="text-gray-500 text-xs text-center italic">
@@ -373,7 +345,7 @@ const AuthSimulation = () => {
         </div>
         <div className="text-center space-y-2">
           <div className="text-lg font-bold text-white">正在进行安全授权</div>
-          <div className="text-sm text-gray-500">请在弹出的北斗系统授权页面完成操作</div>
+          <div className="text-sm text-gray-400">请在弹出的北斗系统授权页面完成操作</div>
         </div>
         <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
           <motion.div 
@@ -391,12 +363,12 @@ const AuthSimulation = () => {
     <div className="flex flex-col gap-4">
       <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
         {/* Header */}
-        <div className="bg-blue-600/90 backdrop-blur-md px-6 py-4 flex items-center justify-between">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-1.5 bg-white/20 rounded-lg">
               <Zap className="w-5 h-5 text-white fill-white" />
             </div>
-            <span className="text-white font-bold text-lg tracking-tight">需要您的授权才能继续</span>
+            <span className="text-white font-bold text-lg tracking-tight">北斗系统安全授权</span>
           </div>
           <div className="flex gap-2">
             <div className="w-2 h-2 rounded-full bg-white/30" />
@@ -547,7 +519,8 @@ const EditingSimulation = () => {
   const [tasks, setTasks] = React.useState(0);
   const [activeStep, setActiveStep] = React.useState(0);
   const [isComplete, setIsComplete] = React.useState(false);
-  const [publishState, setPublishState] = React.useState<'idle' | 'authorizing' | 'selecting_page' | 'authorized_pending' | 'publishing' | 'configuring' | 'success'>('idle');
+  const [publishState, setPublishState] = React.useState<'idle' | 'check_auth' | 'publishing' | 'configuring' | 'success'>('idle');
+  const [incompleteBtnText, setIncompleteBtnText] = React.useState('未完成');
 
   React.useEffect(() => {
     const timer = setInterval(() => {
@@ -582,7 +555,8 @@ const EditingSimulation = () => {
   }, []);
 
   const handlePublish = () => {
-    setPublishState('authorizing');
+    setPublishState('check_auth');
+    setIncompleteBtnText('未完成');
   };
 
   const handleGoAuthorize = () => {
@@ -708,46 +682,10 @@ const EditingSimulation = () => {
             </div>
           )}
 
-          {(publishState === 'authorizing' || publishState === 'selecting_page' || publishState === 'authorized_pending') && (
+          {publishState === 'check_auth' && (
             <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-[#1877F2] rounded-full flex items-center justify-center">
-                  <Facebook className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <div className="text-sm font-bold text-white">授权 Facebook</div>
-                  <div className="text-xs text-gray-400">发布视频需要您的社交账号授权</div>
-                </div>
-              </div>
-              
-              {publishState === 'authorizing' && (
-                <button 
-                  onClick={handleGoAuthorize}
-                  className="w-full py-2.5 bg-[#1877F2] hover:bg-[#166fe5] text-white rounded-xl text-sm font-bold transition-colors"
-                >
-                  去授权
-                </button>
-              )}
-
-              {publishState === 'selecting_page' && (
-                <div className="space-y-3">
-                  <div className="text-xs text-gray-400 mb-1">授权成功！请选择发布到的公共主页：</div>
-                  <select className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-blue-500 transition-colors">
-                    <option value="" className="bg-[#121218]">-- 请选择公共主页 --</option>
-                    <option value="page1" className="bg-[#121218]">我的短剧频道 A</option>
-                    <option value="page2" className="bg-[#121218]">小说推文主页 B</option>
-                    <option value="page3" className="bg-[#121218]">海外剧场 C</option>
-                  </select>
-                  <button 
-                    onClick={handleSelectPage}
-                    className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold transition-colors"
-                  >
-                    确认选择
-                  </button>
-                </div>
-              )}
-
-              {publishState === 'authorized_pending' && (
+              <div className="text-sm font-bold text-white mb-4 text-center">发布授权确认</div>
+              {incompleteBtnText === '未完成' ? (
                 <div className="flex gap-2">
                   <button 
                     onClick={handleAuthorized}
@@ -756,12 +694,19 @@ const EditingSimulation = () => {
                     已授权
                   </button>
                   <button 
-                    onClick={() => setPublishState('authorizing')}
+                    onClick={() => setIncompleteBtnText('去授权')}
                     className="flex-1 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-sm font-bold transition-colors"
                   >
                     未完成
                   </button>
                 </div>
+              ) : (
+                <button 
+                  onClick={() => setIncompleteBtnText('未完成')}
+                  className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold transition-colors"
+                >
+                  去授权
+                </button>
               )}
             </div>
           )}
