@@ -129,7 +129,7 @@ const NovelSimulation = () => {
   };
 
   React.useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
+    let timeoutId: any;
     if (publishState === 'publishing') {
       timeoutId = setTimeout(() => {
         setPublishState('configuring');
@@ -184,9 +184,8 @@ const NovelSimulation = () => {
           <div className="text-xl font-black text-cyan-400 italic">{progress} %</div>
         </div>
         <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-          <motion.div 
-            initial={{ width: 0 }}
-            animate={{ width: `${progress}%` }}
+          <div 
+            style={{ width: `${progress}%`, transition: 'width 0.1s linear' }}
             className="h-full bg-gradient-to-r from-blue-400 to-cyan-500 shadow-[0_0_10px_rgba(34,211,238,0.5)]"
           />
         </div>
@@ -226,11 +225,7 @@ const NovelSimulation = () => {
       </div>
 
       {isComplete && (
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-4"
-        >
+        <div className="space-y-4">
           {publishState === 'idle' && (
             <div className="flex gap-3">
               <button className="flex-1 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl text-sm font-bold transition-colors">
@@ -302,7 +297,7 @@ const NovelSimulation = () => {
               </button>
             </div>
           )}
-        </motion.div>
+        </div>
       )}
     </div>
   );
@@ -313,7 +308,7 @@ const AuthSimulation = () => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   React.useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
+    let timeoutId: any;
     if (state === 'authorizing') {
       timeoutId = setTimeout(() => {
         setState('authorized');
@@ -336,7 +331,7 @@ const AuthSimulation = () => {
   if (state === 'authorized') {
     return (
       <div className="flex flex-col gap-4">
-        <div className="bg-green-500/10 border border-green-500/20 rounded-2xl p-6 flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-500">
+        <div className="bg-green-500/10 border border-green-500/20 rounded-2xl p-6 flex flex-col items-center gap-4">
           <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center shadow-lg shadow-green-500/20">
             <CheckCircle2 className="w-10 h-10 text-white" />
           </div>
@@ -367,10 +362,8 @@ const AuthSimulation = () => {
           <div className="text-sm text-gray-400">请在弹出的北斗系统授权页面完成操作</div>
         </div>
         <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
-          <motion.div 
-            initial={{ width: 0 }}
-            animate={{ width: '100%' }}
-            transition={{ duration: 2, ease: "linear" }}
+          <div 
+            style={{ width: '100%', transition: 'width 2s linear' }}
             className="h-full bg-orange-500"
           />
         </div>
@@ -447,88 +440,81 @@ const AuthSimulation = () => {
       </div>
 
       {/* Full-screen Auth Modal */}
-      <AnimatePresence>
-        {isModalOpen && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/80 backdrop-blur-md"
-            />
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative w-full max-w-lg bg-[#1a1a1a] border border-white/10 rounded-[32px] overflow-hidden shadow-2xl"
-            >
-              <div className="p-8">
-                {/* Icons Section */}
-                <div className="flex items-center justify-center gap-6 mb-8">
-                  <div className="w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/20">
-                    <span className="text-3xl">🦞</span>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <div className="w-4 h-0.5 bg-gray-700" />
-                    <div className="w-4 h-0.5 bg-gray-700" />
-                  </div>
-                  <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center">
-                    <Zap className="w-8 h-8 text-blue-500 fill-blue-500" />
-                  </div>
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            onClick={() => setIsModalOpen(false)}
+          />
+          <div 
+            className="relative w-full max-w-lg bg-[#1a1a1a] border border-white/10 rounded-[32px] overflow-hidden shadow-2xl"
+          >
+            <div className="p-8">
+              {/* Icons Section */}
+              <div className="flex items-center justify-center gap-6 mb-8">
+                <div className="w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/20">
+                  <span className="text-3xl">🦞</span>
                 </div>
-
-                <h3 className="text-2xl font-bold text-center text-white mb-8">PolarClaw (北斗智影) 请求你的授权</h3>
-
-                {/* Identity Section */}
-                <div className="space-y-4 mb-8">
-                  <div className="text-sm text-gray-500">当前登录身份：</div>
-                  <div className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
-                    <div className="w-12 h-12 bg-red-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">
-                      b
-                    </div>
-                    <div>
-                      <div className="font-bold text-white">智影文化传媒</div>
-                      <div className="text-sm text-gray-500">唐欢</div>
-                    </div>
-                  </div>
+                <div className="flex flex-col gap-1">
+                  <div className="w-4 h-0.5 bg-gray-700" />
+                  <div className="w-4 h-0.5 bg-gray-700" />
                 </div>
-
-                <div className="h-px bg-white/5 mb-8" />
-
-                {/* Permissions Section */}
-                <div className="space-y-4 mb-10">
-                  <div className="text-sm text-gray-300 font-medium">授权后，应用将获得以下权限（共 76 项）：</div>
-                  <ul className="space-y-3">
-                    {['短剧剧本深度解析', '爆款素材库访问权限', '多平台一键分发授权', 'AI 视频渲染引擎调用', '创作数据实时同步'].map((item, i) => (
-                      <li key={i} className="flex items-center gap-3 text-sm text-gray-400">
-                        <div className="w-1.5 h-1.5 rounded-full bg-gray-600" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="text-xs text-blue-500 hover:underline cursor-pointer">你可以在应用授权管理中查看或撤销已授权权限</div>
-                </div>
-
-                {/* Buttons */}
-                <div className="flex gap-4">
-                  <button 
-                    onClick={() => setIsModalOpen(false)}
-                    className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-gray-300 rounded-xl font-bold transition-all border border-white/10"
-                  >
-                    拒绝
-                  </button>
-                  <button 
-                    onClick={handleModalConfirm}
-                    className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20"
-                  >
-                    授权
-                  </button>
+                <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center">
+                  <Zap className="w-8 h-8 text-blue-500 fill-blue-500" />
                 </div>
               </div>
-            </motion.div>
+
+              <h3 className="text-2xl font-bold text-center text-white mb-8">PolarClaw (北斗智影) 请求你的授权</h3>
+
+              {/* Identity Section */}
+              <div className="space-y-4 mb-8">
+                <div className="text-sm text-gray-500">当前登录身份：</div>
+                <div className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
+                  <div className="w-12 h-12 bg-red-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">
+                    b
+                  </div>
+                  <div>
+                    <div className="font-bold text-white">智影文化传媒</div>
+                    <div className="text-sm text-gray-500">唐欢</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="h-px bg-white/5 mb-8" />
+
+              {/* Permissions Section */}
+              <div className="space-y-4 mb-10">
+                <div className="text-sm text-gray-300 font-medium">授权后，应用将获得以下权限（共 76 项）：</div>
+                <ul className="space-y-3">
+                  {['短剧剧本深度解析', '爆款素材库访问权限', '多平台一键分发授权', 'AI 视频渲染引擎调用', '创作数据实时同步'].map((item, i) => (
+                    <li key={i} className="flex items-center gap-3 text-sm text-gray-400">
+                      <div className="w-1.5 h-1.5 rounded-full bg-gray-600" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <div className="text-xs text-blue-500 hover:underline cursor-pointer">你可以在应用授权管理中查看或撤销已授权权限</div>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex gap-4">
+                <button 
+                  onClick={() => setIsModalOpen(false)}
+                  className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-gray-300 rounded-xl font-bold transition-all border border-white/10"
+                >
+                  拒绝
+                </button>
+                <button 
+                  onClick={handleModalConfirm}
+                  className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20"
+                >
+                  授权
+                </button>
+              </div>
+            </div>
           </div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
     </div>
   );
 };
@@ -591,7 +577,7 @@ const EditingSimulation = () => {
   };
 
   React.useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
+    let timeoutId: any;
     if (publishState === 'publishing') {
       timeoutId = setTimeout(() => {
         setPublishState('configuring');
@@ -646,9 +632,8 @@ const EditingSimulation = () => {
           <div className="text-xl font-black text-purple-400 italic">{progress} %</div>
         </div>
         <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-          <motion.div 
-            initial={{ width: 0 }}
-            animate={{ width: `${progress}%` }}
+          <div 
+            style={{ width: `${progress}%`, transition: 'width 0.1s linear' }}
             className="h-full bg-gradient-to-r from-cyan-400 to-purple-500 shadow-[0_0_10px_rgba(34,211,238,0.5)]"
           />
         </div>
@@ -690,11 +675,7 @@ const EditingSimulation = () => {
       </div>
 
       {isComplete && (
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-4 pt-4 border-t border-white/5"
-        >
+        <div className="space-y-4 pt-4 border-t border-white/5">
           {publishState === 'idle' && (
             <div className="flex gap-3">
               <button className="flex-1 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm font-bold text-white transition-all flex items-center justify-center gap-2">
@@ -768,7 +749,7 @@ const EditingSimulation = () => {
               </button>
             </div>
           )}
-        </motion.div>
+        </div>
       )}
     </div>
   );
@@ -994,11 +975,8 @@ export default function App() {
           <div className={`flex-1 overflow-y-auto relative ${view === 'polarclaw' ? 'p-0' : 'px-8 py-12 flex flex-col items-center z-10'}`}>
             <AnimatePresence mode="wait">
               {view === 'home' || view === 'new-chat' ? (
-                <motion.div 
+                <div 
                   key={view}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
                   className="w-full max-w-4xl flex flex-col items-center text-center mt-10"
                 >
                   <h1 className="text-5xl font-bold mb-4 tracking-tight">
@@ -1070,12 +1048,10 @@ export default function App() {
                       ))}
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ) : view === 'polarclaw' ? (
-                <motion.div 
+                <div 
                   key="polarclaw"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
                   className="w-full h-full flex flex-col items-center text-white overflow-y-auto z-10"
                 >
                   {isPolarClawClaimed ? (
@@ -1187,14 +1163,9 @@ export default function App() {
                       </div>
                     </div>
                   )}
-                </motion.div>
+                </div>
               ) : (
-                <motion.div 
-                  key="chat"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="w-full max-w-3xl flex flex-col gap-6 pb-32"
-                >
+                <div className="w-full max-w-3xl flex flex-col gap-6 pb-32">
                   {messages.map((msg, i) => (
                     <div key={i} className={`flex gap-4 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                       {msg.role === 'assistant' && (
@@ -1226,7 +1197,7 @@ export default function App() {
                       )}
                     </div>
                   ))}
-                </motion.div>
+                </div>
               )}
             </AnimatePresence>
           </div>
