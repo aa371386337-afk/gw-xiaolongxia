@@ -126,13 +126,23 @@ const NovelSimulation = () => {
 
   const handleAuthorized = () => {
     setPublishState('publishing');
-    setTimeout(() => {
-      setPublishState('configuring');
-      setTimeout(() => {
+  };
+
+  React.useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    if (publishState === 'publishing') {
+      timeoutId = setTimeout(() => {
+        setPublishState('configuring');
+      }, 2000);
+    } else if (publishState === 'configuring') {
+      timeoutId = setTimeout(() => {
         setPublishState('success');
       }, 2000);
-    }, 2000);
-  };
+    }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [publishState]);
 
   const steps = [
     { label: '剧情拆解', icon: '📖' },
@@ -299,8 +309,20 @@ const NovelSimulation = () => {
 };
 
 const AuthSimulation = () => {
-  const [state, setState] = useState<'initial' | 'authorizing' | 'authorized'>('initial');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [state, setState] = React.useState<'initial' | 'authorizing' | 'authorized'>('initial');
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    if (state === 'authorizing') {
+      timeoutId = setTimeout(() => {
+        setState('authorized');
+      }, 2000);
+    }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [state]);
 
   const handleAuthorizeClick = () => {
     setIsModalOpen(true);
@@ -309,9 +331,6 @@ const AuthSimulation = () => {
   const handleModalConfirm = () => {
     setIsModalOpen(false);
     setState('authorizing');
-    setTimeout(() => {
-      setState('authorized');
-    }, 2000);
   };
 
   if (state === 'authorized') {
@@ -569,13 +588,23 @@ const EditingSimulation = () => {
 
   const handleAuthorized = () => {
     setPublishState('publishing');
-    setTimeout(() => {
-      setPublishState('configuring');
-      setTimeout(() => {
+  };
+
+  React.useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    if (publishState === 'publishing') {
+      timeoutId = setTimeout(() => {
+        setPublishState('configuring');
+      }, 2000);
+    } else if (publishState === 'configuring') {
+      timeoutId = setTimeout(() => {
         setPublishState('success');
       }, 2000);
-    }, 2000);
-  };
+    }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [publishState]);
 
   const steps = [
     { label: '创意生成', icon: '🎬' },
