@@ -18,6 +18,7 @@ import {
   X,
   CheckCircle2,
   Zap,
+  Copy,
   Plus,
   Edit3,
   Clock,
@@ -425,12 +426,6 @@ const AuthSimulation = () => {
               前往授权
             </button>
           </div>
-        </div>
-        
-        {/* Footer */}
-        <div className="px-6 py-4 bg-white/5 border-t border-white/5 text-[11px] text-gray-500 flex items-center gap-2">
-          <Clock className="w-3.5 h-3.5" />
-          授权链接将在 3 分钟后失效，届时需重新发起
         </div>
       </div>
       
@@ -1056,11 +1051,6 @@ export default function App() {
                 >
                   {isPolarClawClaimed ? (
                     <div className="w-full max-w-4xl px-8 py-12 flex flex-col items-center">
-                      <div className="text-center mb-12">
-                        <h2 className="text-5xl font-bold text-white mb-4">PolarClaw来了！ 🦞</h2>
-                        <p className="text-xl text-gray-400 mb-8">在下方输入消息，增加复杂配置，即可快速开启对话。</p>
-                      </div>
-                      
                       {messages.length > 0 && (
                         <div className="w-full max-w-3xl flex flex-col gap-6 mt-8 mb-32">
                           {messages.map((msg, i) => (
@@ -1111,21 +1101,23 @@ export default function App() {
                             <h2 className="text-3xl font-bold">创建 PolarClaw</h2>
                           </div>
                           <p className="text-gray-400 mb-8 leading-relaxed">
-                            一键部署 PolarClaw，零门槛即刻唤醒个人助手，随时随地对话，<span className="text-orange-500 cursor-pointer hover:underline">了解更多</span>
+                            一键部署 PolarClaw，零门槛即刻唤醒个人助手，随时随地对话
                           </p>
                           <button 
                             onClick={() => {
                               setIsPolarClawClaimed(true);
-                              // Add initial authorization card
-                              setTimeout(() => {
-                                const authMsg: Message = {
-                                  role: 'assistant',
-                                  content: '需要授权才能继续',
-                                  isPolarClaw: true,
-                                  type: 'auth_simulation'
-                                };
-                                setMessages(prev => [...prev, authMsg]);
-                              }, 500);
+                              const welcomeMsg: Message = {
+                                role: 'assistant',
+                                content: 'PolarClaw来了！ 🦞在下方输入消息，增加复杂配置，即可快速开启对话。',
+                                isPolarClaw: true
+                              };
+                              const authMsg: Message = {
+                                role: 'assistant',
+                                content: '需要授权才能继续',
+                                isPolarClaw: true,
+                                type: 'auth_simulation'
+                              };
+                              setMessages([welcomeMsg, authMsg]);
                             }}
                             className="px-8 py-3 bg-red-600 text-white font-bold rounded-full hover:bg-red-700 transition-all shadow-lg shadow-red-600/20"
                           >
@@ -1434,14 +1426,26 @@ export default function App() {
                           </div>
                         </div>
                       </div>
-
-                      <button className="w-full py-4 bg-gradient-to-r from-orange-500 to-pink-600 rounded-2xl text-lg font-bold text-white shadow-xl shadow-orange-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
-                        去选剧
-                      </button>
                     </div>
                   ) : (
-                    <div className="flex flex-col items-center justify-center py-12 gap-8">
-                      <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-white/5 group max-w-md">
+                    <div className="flex flex-col gap-6">
+                      <div className="relative">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                        <input 
+                          type="text"
+                          placeholder="请输入小说ID"
+                          className="w-full bg-[#242424] border border-white/5 rounded-2xl py-4 pl-12 pr-24 text-gray-200 focus:outline-none focus:border-blue-500/50 transition-colors"
+                        />
+                        <button className="absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-xl text-sm font-bold text-white shadow-lg shadow-blue-500/20">
+                          搜索
+                        </button>
+                      </div>
+                      
+                      <div className="text-xs text-gray-500">
+                        支持语种：美国
+                      </div>
+
+                      <div className="relative aspect-video rounded-2xl overflow-hidden bg-white/5 group">
                         <img 
                           src="https://picsum.photos/seed/novel/800/450" 
                           alt="novel library" 
@@ -1456,33 +1460,6 @@ export default function App() {
                           </div>
                         </div>
                       </div>
-
-                      <button 
-                        onClick={() => {
-                          setIsMediaModalOpen(false);
-                          setInputText(NOVEL_TEXT);
-                          // We need to trigger handleSend. 
-                          // Since inputText is set, we can call handleSend if we expose it or use a ref.
-                          // Alternatively, we can just manually add the messages.
-                          const newUserMsg: Message = { role: 'user', content: NOVEL_TEXT };
-                          setMessages(prev => [...prev, newUserMsg]);
-                          setInputText('');
-                          if (view !== 'polarclaw') setView('chat');
-                          
-                          setTimeout(() => {
-                            const aiMsg: Message = {
-                              role: 'assistant',
-                              content: '正在为您生成小说视频...',
-                              isPolarClaw: true,
-                              type: 'novel_simulation'
-                            };
-                            setMessages(prev => [...prev, aiMsg]);
-                          }, 1000);
-                        }}
-                        className="w-full max-w-md py-4 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-2xl text-lg font-bold text-white shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
-                      >
-                        去选小说
-                      </button>
                     </div>
                   )}
                 </div>
