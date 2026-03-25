@@ -840,6 +840,39 @@ export default function App() {
   const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
   const [activeMediaTab, setActiveMediaTab] = useState<'local' | 'library' | 'novel'>('local');
   const [isWaitingForUpload, setIsWaitingForUpload] = useState(false);
+  const [isMediaLibraryOpen, setIsMediaLibraryOpen] = useState(false);
+
+  const handleSelectNovel = () => {
+    setIsMediaModalOpen(false);
+    const newUserMsg: Message = { role: 'user', content: '我已选好小说，请开始生成。' };
+    setMessages(prev => [...prev, newUserMsg]);
+    
+    setTimeout(() => {
+      const aiMsg: Message = {
+        role: 'assistant',
+        content: '正在为您生成小说视频...',
+        isPolarClaw: true,
+        type: 'novel_simulation'
+      };
+      setMessages(prev => [...prev, aiMsg]);
+    }, 600);
+  };
+
+  const handleSelectDrama = () => {
+    setIsMediaModalOpen(false);
+    const newUserMsg: Message = { role: 'user', content: '我已选好短剧，请开始生成。' };
+    setMessages(prev => [...prev, newUserMsg]);
+    
+    setTimeout(() => {
+      const aiMsg: Message = {
+        role: 'assistant',
+        content: '正在为您生成短剧视频...',
+        isPolarClaw: true,
+        type: 'editing_simulation'
+      };
+      setMessages(prev => [...prev, aiMsg]);
+    }, 600);
+  };
 
   const handleConfirmPersonality = () => {
     if (!personalityText.trim()) {
@@ -1427,7 +1460,10 @@ export default function App() {
                         </div>
                       </div>
 
-                      <button className="w-full py-4 bg-gradient-to-r from-orange-500 to-pink-600 rounded-2xl text-white font-bold shadow-lg shadow-orange-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                      <button 
+                        onClick={handleSelectDrama}
+                        className="w-full py-4 bg-gradient-to-r from-orange-500 to-pink-600 rounded-2xl text-white font-bold shadow-lg shadow-orange-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                      >
                         去选剧 <ChevronLeft className="w-4 h-4 rotate-180" />
                       </button>
                     </div>
@@ -1465,7 +1501,10 @@ export default function App() {
                         </div>
                       </div>
 
-                      <button className="w-full py-4 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-2xl text-white font-bold shadow-lg shadow-blue-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                      <button 
+                        onClick={handleSelectNovel}
+                        className="w-full py-4 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-2xl text-white font-bold shadow-lg shadow-blue-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                      >
                         去选小说 <ChevronLeft className="w-4 h-4 rotate-180" />
                       </button>
                     </div>
