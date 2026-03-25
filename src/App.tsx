@@ -1406,7 +1406,7 @@ export default function App() {
                           搜索
                         </button>
                       </div>
-                      
+
                       <div className="text-xs text-gray-500">
                         支持剧场：KalosTV、SnackShort、GoodShort、MoboReels、TouchShort、FlickReels
                       </div>
@@ -1426,6 +1426,10 @@ export default function App() {
                           </div>
                         </div>
                       </div>
+
+                      <button className="w-full py-4 bg-gradient-to-r from-orange-500 to-pink-600 rounded-2xl text-white font-bold shadow-lg shadow-orange-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                        去选剧 <ChevronLeft className="w-4 h-4 rotate-180" />
+                      </button>
                     </div>
                   ) : (
                     <div className="flex flex-col gap-6">
@@ -1440,7 +1444,7 @@ export default function App() {
                           搜索
                         </button>
                       </div>
-                      
+
                       <div className="text-xs text-gray-500">
                         支持语种：美国
                       </div>
@@ -1460,6 +1464,10 @@ export default function App() {
                           </div>
                         </div>
                       </div>
+
+                      <button className="w-full py-4 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-2xl text-white font-bold shadow-lg shadow-blue-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                        去选小说 <ChevronLeft className="w-4 h-4 rotate-180" />
+                      </button>
                     </div>
                   )}
                 </div>
