@@ -782,7 +782,7 @@ const EditingSimulation = () => {
 };
 
 const Sidebar = ({ currentView, setView, dramaCredits, novelGenerations }: { currentView: View, setView: (v: View) => void, dramaCredits: number, novelGenerations: number }) => {
-  const isExpanded = currentView === 'polarclaw';
+  const isExpanded = currentView !== 'home';
 
   return (
     <div className={`${isExpanded ? 'w-64' : 'w-16'} h-full bg-[#0a0a0a] border-r border-white/5 flex flex-col py-6 z-50 transition-all duration-300 ease-in-out`}>
@@ -798,27 +798,26 @@ const Sidebar = ({ currentView, setView, dramaCredits, novelGenerations }: { cur
 
       <div className={`flex flex-col gap-2 ${isExpanded ? 'px-4' : 'items-center'}`}>
         {/* 新建对话 */}
-        <button 
-          onClick={() => setView('new-chat')}
-          className={`flex items-center gap-3 p-3 rounded-xl transition-all relative group ${isExpanded ? 'w-full' : ''} ${currentView === 'new-chat' ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+        <div 
+          className={`flex items-center gap-3 p-3 rounded-xl transition-all relative group ${isExpanded ? 'w-full' : ''} text-gray-600 cursor-default`}
         >
-          <Plus className="w-6 h-6 shrink-0" />
+          <Plus className="w-6 h-6 shrink-0 opacity-50" />
           {isExpanded && <span className="text-sm font-medium">新建对话</span>}
           {!isExpanded && (
-            <span className="absolute left-16 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-[60]">新建对话</span>
+            <span className="absolute left-16 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-[60]">新建对话 (暂不支持)</span>
           )}
-        </button>
+        </div>
 
         {/* AI创作工具 */}
-        <button 
-          className={`flex items-center gap-3 p-3 rounded-xl transition-all relative group ${isExpanded ? 'w-full' : ''} text-gray-400 hover:text-white hover:bg-white/5`}
+        <div 
+          className={`flex items-center gap-3 p-3 rounded-xl transition-all relative group ${isExpanded ? 'w-full' : ''} text-gray-600 cursor-default`}
         >
-          <Sparkles className="w-6 h-6 shrink-0" />
+          <Sparkles className="w-6 h-6 shrink-0 opacity-50" />
           {isExpanded && <span className="text-sm font-medium">AI创作工具</span>}
           {!isExpanded && (
-            <span className="absolute left-16 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-[60]">AI创作工具</span>
+            <span className="absolute left-16 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-[60]">AI创作工具 (暂不支持)</span>
           )}
-        </button>
+        </div>
         
         {/* PolarClaw */}
         <button 
@@ -1488,8 +1487,20 @@ export default function App() {
                     <div 
                       onClick={() => {
                         if (isWaitingForUpload) {
+                          if (dramaCredits < 10) {
+                            setIsMediaModalOpen(false);
+                            const aiMsg: Message = {
+                              role: 'assistant',
+                              content: '抱歉，您的今日短剧剪辑积分不足。积分将在每日 00:00 自动重置，请明天再试。',
+                              isPolarClaw: true
+                            };
+                            setMessages(prev => [...prev, aiMsg]);
+                            return;
+                          }
+
                           setIsMediaModalOpen(false);
                           setIsWaitingForUpload(false);
+                          setDramaCredits(prev => prev - 10);
                           // Add simulation message
                           setTimeout(() => {
                             const simulationMsg: Message = {
@@ -1510,6 +1521,9 @@ export default function App() {
                       <div className="text-xl font-medium text-gray-200">添加视频</div>
                       <div className="text-sm text-gray-500 text-center">
                         支持 mp4 视频格式，视频大小不超过400MB，30s≤时长≤900s
+                      </div>
+                      <div className="text-xs font-bold text-orange-500 bg-orange-500/10 px-2 py-1 rounded-lg">
+                        今日已消耗积分：{30 - dramaCredits} / 30
                       </div>
                     </div>
                   ) : activeMediaTab === 'library' ? (
