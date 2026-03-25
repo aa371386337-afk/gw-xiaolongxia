@@ -781,7 +781,7 @@ const EditingSimulation = () => {
   );
 };
 
-const Sidebar = ({ currentView, setView }: { currentView: View, setView: (v: View) => void }) => {
+const Sidebar = ({ currentView, setView, dramaCredits, novelGenerations }: { currentView: View, setView: (v: View) => void, dramaCredits: number, novelGenerations: number }) => {
   const isExpanded = currentView === 'polarclaw';
 
   return (
@@ -855,6 +855,35 @@ const Sidebar = ({ currentView, setView }: { currentView: View, setView: (v: Vie
             <span className="absolute left-16 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-[60]">历史对话</span>
           </button>
         )}
+
+        {/* Usage Limits */}
+        {isExpanded && (
+          <div className="mt-auto px-4 py-6 border-t border-white/5">
+            <div className="bg-white/5 rounded-2xl p-4 flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold text-gray-400">短剧已消耗积分</span>
+                <span className="text-[10px] font-bold text-orange-500">{30 - dramaCredits} / 30</span>
+              </div>
+              <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.4)] transition-all duration-500" 
+                  style={{ width: `${((30 - dramaCredits) / 30) * 100}%` }}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold text-gray-400">小说已生成次数</span>
+                <span className="text-[10px] font-bold text-blue-500">{5 - novelGenerations} / 5</span>
+              </div>
+              <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.4)] transition-all duration-500" 
+                  style={{ width: `${((5 - novelGenerations) / 5) * 100}%` }}
+                />
+              </div>
+              <div className="text-[9px] text-gray-500 mt-1">每日 00:00 自动重置</div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -872,11 +901,25 @@ export default function App() {
   const [activeMediaTab, setActiveMediaTab] = useState<'local' | 'library' | 'novel'>('local');
   const [isWaitingForUpload, setIsWaitingForUpload] = useState(false);
   const [isMediaLibraryOpen, setIsMediaLibraryOpen] = useState(false);
+  const [dramaCredits, setDramaCredits] = useState(30);
+  const [novelGenerations, setNovelGenerations] = useState(5);
 
   const handleSelectNovel = () => {
     setIsMediaModalOpen(false);
+    
+    if (novelGenerations <= 0) {
+      const aiMsg: Message = {
+        role: 'assistant',
+        content: '抱歉，您的今日小说生成次数已用完。次数将在每日 00:00 自动重置，请明天再试。',
+        isPolarClaw: true
+      };
+      setMessages(prev => [...prev, aiMsg]);
+      return;
+    }
+
     const newUserMsg: Message = { role: 'user', content: NOVEL_TEXT };
     setMessages(prev => [...prev, newUserMsg]);
+    setNovelGenerations(prev => prev - 1);
     
     setTimeout(() => {
       const aiMsg: Message = {
@@ -891,8 +934,20 @@ export default function App() {
 
   const handleSelectDrama = () => {
     setIsMediaModalOpen(false);
+
+    if (dramaCredits < 10) {
+      const aiMsg: Message = {
+        role: 'assistant',
+        content: '抱歉，您的今日短剧剪辑积分不足。积分将在每日 00:00 自动重置，请明天再试。',
+        isPolarClaw: true
+      };
+      setMessages(prev => [...prev, aiMsg]);
+      return;
+    }
+
     const newUserMsg: Message = { role: 'user', content: '我已选好短剧，请开始生成。' };
     setMessages(prev => [...prev, newUserMsg]);
+    setDramaCredits(prev => prev - 10);
     
     setTimeout(() => {
       const aiMsg: Message = {
@@ -982,7 +1037,7 @@ export default function App() {
   return (
     <div className={`flex h-screen bg-[#050505] text-white font-sans overflow-hidden`}>
       {/* Sidebar only on secondary pages */}
-      {view !== 'home' && <Sidebar currentView={view} setView={handleSetView} />}
+      {view !== 'home' && <Sidebar currentView={view} setView={handleSetView} dramaCredits={dramaCredits} novelGenerations={novelGenerations} />}
 
       <main className="flex-1 relative flex flex-col">
         {/* Background Glow */}
@@ -1471,8 +1526,13 @@ export default function App() {
                         </button>
                       </div>
 
-                      <div className="text-xs text-gray-500">
-                        支持剧场：KalosTV、SnackShort、GoodShort、MoboReels、TouchShort、FlickReels
+                      <div className="flex items-center justify-between px-1">
+                        <div className="text-xs text-gray-500">
+                          支持剧场：KalosTV、SnackShort、GoodShort、MoboReels、TouchShort、FlickReels
+                        </div>
+                        <div className="text-xs font-bold text-orange-500 bg-orange-500/10 px-2 py-1 rounded-lg">
+                          今日已消耗积分：{30 - dramaCredits} / 30
+                        </div>
                       </div>
 
                       <div className="relative aspect-video rounded-2xl overflow-hidden bg-white/5 group">
@@ -1512,8 +1572,13 @@ export default function App() {
                         </button>
                       </div>
 
-                      <div className="text-xs text-gray-500">
-                        支持语种：美国
+                      <div className="flex items-center justify-between px-1">
+                        <div className="text-xs text-gray-500">
+                          支持语种：美国
+                        </div>
+                        <div className="text-xs font-bold text-blue-500 bg-blue-500/10 px-2 py-1 rounded-lg">
+                          今日已生成次数：{5 - novelGenerations} / 5
+                        </div>
                       </div>
 
                       <div className="relative aspect-video rounded-2xl overflow-hidden bg-white/5 group">
