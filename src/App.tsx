@@ -39,38 +39,69 @@ interface Message {
 
 // --- Components ---
 
-const NOVEL_TEXT = `To please his precious moonlight, Selene Blanc, my fiancé Grayson Delgado publicly exposed the core jewelry design patents my mother had poured half her life into — right in the middle of our wedding.
-Overnight, the jewelry brand my mother had built from nothing collapsed into bankruptcy. She couldn't withstand the devastating blow. A sudden heart attack took her from me forever.
-I was drowning in despair, consumed by nothing but the need to destroy Grayson, when Samuel Rowe — the boy I'd grown up with, now the godfather of Sicily's jewelry empire — flew back from overseas with an army of men.
-He mobilized his entire family's power to help me salvage what was left of the brand. He made me a solemn promise: he would find whoever was truly behind the patent leak and make them pay for what they'd done to my mother.
-I believed him. After the only light in my world had been snuffed out, he became the last thing keeping me afloat.
-After my mother's funeral, I tore up my engagement to Grayson with my own hands and married the man who had held me steady through my darkest hour.
-Five years. More than eighteen hundred days and nights. He sheltered me under his wing, gave me the deepest tenderness and the safest harbor. I thought I had finally walked out of the darkness and into a new life. But one evening, five years later, at the end of a corridor in a private club, I overheard a conversation between Grayson and Samuel.
-"Every time Lois Simmons sees me, she looks like she wants to tear me apart. She's so convinced I'm the one who destroyed her mother, destroyed everything she had."
-"But tell me — if that stupid woman ever found out the person who actually leaked her mother's patents was the husband holding her in his arms every night, do you think she'd lose her mind on the spot?"
-——
-My hand froze an inch from the door handle. The blood in my veins turned to ice.
-Grayson's mocking voice kept going, each word a poisoned blade driving straight into my skull:
-"You're a real piece of work, Samuel. Lois treated you like her own brother when she was a kid. She trusted you with everything she had. She grew up and married you, gave you her whole heart. But she could never have imagined — not in her wildest nightmares — that the person who destroyed her mother's life's work, the person who drove her mother to her death, was you all along."
-I clenched my fists so hard my nails cut into my palms. The pain was blinding, but it was nothing — not even a fraction — compared to the agony ripping through my chest. Inside the room, Grayson's voice rose again, dripping with insinuation:
-"Think about it. This poor, clueless woman runs your household every day, helps you manage the jewelry business, gives you everything she's got. She'd hand you the whole world if she could. If she ever found out that you were the one who sold her mother's core patents to a competitor — that you personally drove her mother to her grave — do you think she'd skin you alive?"
-"Shut your mouth."
-Samuel's voice cut through like a blade of ice, low and tightly controlled, laced with barely restrained agitation.
-"Oh, would you look at that. The great godfather of Sicily's jewelry world, playing the devoted saint." Grayson let out a scornful laugh. "Her mother treated you like her own son. And you repaid her by selling her out to keep Selene happy, to hand Selene the keys to the jewelry world's inner circle. You pushed that woman straight into her grave. How do you sleep at night?"
-A bottle slammed against the table, the sharp crack of shattering glass cutting through the air. Samuel's voice came through the door, his teeth grinding around every syllable, raw with an obsessive edge:
-"What I owe Lois and her mother — I'll never be able to repay it, not in this lifetime. Everything I did back then was to keep Selene safe, to help her gain a foothold in the industry. If you so much as touch a hair on her head, I will make you wish you were dead."
-"Such devotion. Truly moving." Grayson's cold laughter was thick with contempt. "You'd rip your own heart out for Selene Blanc, but I doubt she'd spare a second glance at a businessman with blood on his hands. Why don't you just go home to your precious Lois? She thinks you're her salvation. She has no idea that you're the worst thing that ever happened to her."
-The sound of a glass exploding against the wall was deafening, and it hammered straight into my heart.
-I fought to control the violent trembling in my body and half-stumbled toward the rooftop bar. I grabbed a bottle of liquor, tilted my head back, and poured it down my throat. The burn seared through me, and tears streamed down my face as I choked. I never drank. Not a drop, not ever. But in that moment, all I wanted was to drown myself in alcohol until those words stopped echoing in my skull.
-So the person who leaked my mother's patents was never Grayson.
-It was Samuel. The man who had sworn to avenge my mother. The man who had promised to protect me for the rest of my life.
-My mother's sudden death. The brand's catastrophic collapse. All the pain, all the despair — it had all been engineered by the man who slept beside me every night.
-No wonder he could always pinpoint the exact solution to every crisis the brand faced. No wonder he knew my mother's patents inside and out. I had been naive enough to believe it was just his brilliance, his dedication.
-It never occurred to me that the man who had shared my bed for five years, the man who had given me all my warmth and all my hope, was the very person who murdered my mother.
-Five years of tenderness and care. Five years of safety and companionship. All of it was nothing but an elaborate lie he'd woven around me — a guilt-ridden act of atonement to quiet his own conscience.
-How pathetic. How utterly absurd.
-A tidal wave of hatred and despair surged through my chest, threatening to rip me apart from the inside.
-With bloodshot eyes, I pulled out my phone and called h`;
+const NOVEL_TEXT = `On our wedding night, my wife, Sarah, wouldn't let me touch her. She said she was too tired and asked me to wait a while.
+
+But every night, in the dead of night, she'd sneak downstairs to the basement. When she returned, she'd always shower, and an eerie, unsettling smell would cling to her.
+
+I asked her what she was doing.
+
+She said she was doing yoga.
+
+Yoga in the middle of the night? I couldn't take it anymore. One night, I secretly followed her down to the basement.
+
+She spotted me, spun around, and grabbed the collar of my pajamas, yelling:
+
+“Get up here!”
+
+“You can’t go into the basement!”
+
+"Otherwise, we're getting a divorce!"
+
+I clutched the stair railing, trembling with anger. My parents bought this house for us as a wedding gift. This is my home! Why can't I go into my own basement? As my wife, who does she think she is talking to me like that?
+
+I took a deep breath, trying to keep my cool. "Sarah, is that how you talk to me?"
+
+Sarah still had a tight grip on my pajama collar, her slender fingers surprisingly strong. "Mark, let's go upstairs first. I'll explain everything in the bedroom."
+
+"You can't explain it here?" I pointed to the pitch-black basement below. "Why can't I go down there? Don't I have a right to know?"
+
+"I'm doing yoga, and that's my private space down there. It's not time to share it yet." She stepped down a few stairs, blocking my path with her body.
+
+“Why?”
+
+"Because it's just not the right time. When it's ready for you to see, I promise I'll show you!"
+
+My gut twisted with frustration. I took another deep breath, forcing myself to calm down. "If that's the case, did you really have to snap at me like that?"
+
+"I..." She bit her lip. "I was just a little worked up, you know? Besides, you know I'm direct; you're used to that."
+
+I scoffed and turned to go upstairs. Fine, I'd wait until she left for work tomorrow, then I'd check out what was really going on down there.
+
+Back in bed, I tossed and turned, unable to sleep. There had to be something fishy going on in that basement, something serious. Was it a secret Sarah didn't want anyone to know?
+
+I looked at her.
+
+She was also awake, staring at the ceiling, lost in thought. I remembered how shocked I'd been when she first asked me out. She was so beautiful, with so many guys after her, while I was just an average-looking guy. What did she even see in me?
+
+She'd said she liked my kindness, my quiet demeanor, and the sense of calm I brought her. I believed her.
+
+But if that was true, why did she push me away every night? I'm her husband, after all. Was this normal?
+
+Finally, I couldn’t hold back. I reached out, wanting to gently caress her cheek.
+
+"What are you doing?!" She pulled away like she'd been burned, glaring at me with disgust. The kind of look you give something revolting.
+
+I suddenly got it, and angrily turned away. But I couldn't let that insult slide. If she didn't have feelings for me, why did she ask me out? Why marry me?!
+
+Thinking that, I spun around, glaring at her. "You said you needed time, that we couldn't be too intimate yet, and I get that. But why such a strong reaction when I just touched you?"
+
+“How many times have I explained this? It’s a psychological thing. I’m looking for a therapist, aren’t I? You need to be patient.” Sarah picked up her phone and gently tapped my shoulder with the back of it—she wouldn’t even touch me with her hand. “Mark, please, just give me six months, okay? After six months, I promise I’ll be better.”
+
+She tapped me with her phone, not even her hand. Was I really that repulsive to her? Could I even believe her? But right then, I had no choice but to wait. I sighed and rolled over.
+
+Truth is, I’d given her everything. From the start of our relationship, I’d done whatever she wanted. She said she liked jewelry, so I bought her expensive necklaces. She wanted to travel, so I took her everywhere. She mentioned investing, so I supported her learning about finance. I gave her everything I had, did my best to get her whatever she wanted.
+
+But this is what I got after the wedding. It all had to connect to that basement! I had to find out what was going on!`;
 
 const NovelSimulation = () => {
   const [progress, setProgress] = React.useState(0);
@@ -844,18 +875,18 @@ export default function App() {
 
   const handleSelectNovel = () => {
     setIsMediaModalOpen(false);
-    const newUserMsg: Message = { role: 'user', content: '我已选好小说，请开始生成。' };
+    const newUserMsg: Message = { role: 'user', content: NOVEL_TEXT };
     setMessages(prev => [...prev, newUserMsg]);
     
     setTimeout(() => {
       const aiMsg: Message = {
         role: 'assistant',
-        content: '正在为您生成小说视频...',
+        content: '收到小说内容！正在为您深度解析剧情并生成视频...',
         isPolarClaw: true,
         type: 'novel_simulation'
       };
       setMessages(prev => [...prev, aiMsg]);
-    }, 600);
+    }, 800);
   };
 
   const handleSelectDrama = () => {
@@ -911,7 +942,7 @@ export default function App() {
       if (inputText === NOVEL_TEXT) {
         aiMsg = {
           role: 'assistant',
-          content: '正在为您生成小说视频...',
+          content: '收到小说内容！正在为您深度解析剧情并生成视频...',
           isPolarClaw: true,
           type: 'novel_simulation'
         };
@@ -1436,7 +1467,7 @@ export default function App() {
                           className="w-full bg-[#242424] border border-white/5 rounded-2xl py-4 pl-12 pr-24 text-gray-200 focus:outline-none focus:border-orange-500/50 transition-colors"
                         />
                         <button className="absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2 bg-gradient-to-r from-orange-500 to-pink-600 rounded-xl text-sm font-bold text-white shadow-lg shadow-orange-500/20">
-                          搜索
+                          去选剧
                         </button>
                       </div>
 
@@ -1464,7 +1495,7 @@ export default function App() {
                         onClick={handleSelectDrama}
                         className="w-full py-4 bg-gradient-to-r from-orange-500 to-pink-600 rounded-2xl text-white font-bold shadow-lg shadow-orange-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                       >
-                        去选剧 <ChevronLeft className="w-4 h-4 rotate-180" />
+                        发送 <ChevronLeft className="w-4 h-4 rotate-180" />
                       </button>
                     </div>
                   ) : (
@@ -1477,7 +1508,7 @@ export default function App() {
                           className="w-full bg-[#242424] border border-white/5 rounded-2xl py-4 pl-12 pr-24 text-gray-200 focus:outline-none focus:border-blue-500/50 transition-colors"
                         />
                         <button className="absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-xl text-sm font-bold text-white shadow-lg shadow-blue-500/20">
-                          搜索
+                          去选小说
                         </button>
                       </div>
 
@@ -1505,7 +1536,7 @@ export default function App() {
                         onClick={handleSelectNovel}
                         className="w-full py-4 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-2xl text-white font-bold shadow-lg shadow-blue-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                       >
-                        去选小说 <ChevronLeft className="w-4 h-4 rotate-180" />
+                        发送 <ChevronLeft className="w-4 h-4 rotate-180" />
                       </button>
                     </div>
                   )}
