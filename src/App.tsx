@@ -103,13 +103,97 @@ Truth is, I’d given her everything. From the start of our relationship, I’d 
 
 But this is what I got after the wedding. It all had to connect to that basement! I had to find out what was going on!`;
 
-const NovelSimulation = () => {
+const VideoPlayerModal = ({ isOpen, onClose, title }: { isOpen: boolean, onClose: () => void, title: string }) => {
+  const [progress, setProgress] = React.useState(0);
+  const [isPlaying, setIsPlaying] = React.useState(true);
+
+  React.useEffect(() => {
+    let interval: any;
+    if (isOpen && isPlaying) {
+      interval = setInterval(() => {
+        setProgress(prev => (prev >= 100 ? 0 : prev + 0.5));
+      }, 100);
+    }
+    return () => clearInterval(interval);
+  }, [isOpen, isPlaying]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/90 backdrop-blur-xl" onClick={onClose} />
+      <div className="relative w-full max-w-4xl aspect-video bg-black rounded-3xl overflow-hidden border border-white/10 shadow-2xl flex flex-col">
+        {/* Header */}
+        <div className="absolute top-0 left-0 right-0 p-6 flex items-center justify-between bg-gradient-to-b from-black/80 to-transparent z-10">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20">
+              <Video className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <div className="text-white font-bold text-lg">{title || '预览视频'}</div>
+              <div className="text-gray-400 text-xs">1080P • 24fps • H.264</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <button className="p-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition-all flex items-center gap-2 text-sm font-medium">
+              <UploadCloud className="w-5 h-5" />
+              下载视频
+            </button>
+            <button onClick={onClose} className="p-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition-all">
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+        </div>
+
+        {/* Video Content Placeholder */}
+        <div className="flex-1 flex items-center justify-center relative group">
+          <img 
+            src={`https://picsum.photos/seed/${title}/1280/720`} 
+            alt="video preview" 
+            className="w-full h-full object-cover opacity-60"
+            referrerPolicy="no-referrer"
+          />
+          <div className="absolute inset-0 flex items-center justify-center">
+             <button onClick={() => setIsPlaying(!isPlaying)} className="w-20 h-20 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 transition-all scale-100 hover:scale-110 active:scale-95">
+                {isPlaying ? <div className="w-10 h-10 bg-white rounded-sm" /> : <div className="w-0 h-0 border-y-[15px] border-y-transparent border-l-[25px] border-l-white ml-2" />}
+             </button>
+          </div>
+        </div>
+
+        {/* Controls */}
+        <div className="p-8 bg-gradient-to-t from-black/80 to-transparent">
+          <div className="flex flex-col gap-4">
+            {/* Progress Bar */}
+            <div className="relative h-1.5 w-full bg-white/10 rounded-full cursor-pointer group">
+              <div 
+                className="absolute h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+                style={{ width: `${progress}%` }}
+              />
+              <div 
+                className="absolute w-4 h-4 bg-white rounded-full shadow-lg -top-1.5 -ml-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                style={{ left: `${progress}%` }}
+              />
+            </div>
+            
+            <div className="flex items-center justify-between text-xs font-mono text-gray-400">
+              <span>00:{Math.floor(progress * 0.3).toString().padStart(2, '0')}</span>
+              <span>00:30</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const NovelSimulation = ({ onViewVideo }: { onViewVideo?: (title: string) => void }) => {
   const [progress, setProgress] = React.useState(0);
   const [tasks, setTasks] = React.useState(0);
   const [activeStep, setActiveStep] = React.useState(0);
   const [isComplete, setIsComplete] = React.useState(false);
-  const [publishState, setPublishState] = React.useState<'idle' | 'check_auth' | 'publishing' | 'configuring' | 'success'>('idle');
+  const [publishState, setPublishState] = React.useState<'idle' | 'check_auth' | 'selecting_accounts' | 'publishing' | 'configuring' | 'success'>('idle');
   const [incompleteBtnText, setIncompleteBtnText] = React.useState('未完成');
+  const [selectedAccounts, setSelectedAccounts] = React.useState<string[]>([]);
 
   React.useEffect(() => {
     const timer = setInterval(() => {
@@ -157,7 +241,18 @@ const NovelSimulation = () => {
   };
 
   const handleAuthorized = () => {
+    setPublishState('selecting_accounts');
+  };
+
+  const handleConfirmAccounts = () => {
+    if (selectedAccounts.length === 0) return;
     setPublishState('publishing');
+  };
+
+  const toggleAccount = (acc: string) => {
+    setSelectedAccounts(prev => 
+      prev.includes(acc) ? prev.filter(a => a !== acc) : [...prev, acc]
+    );
   };
 
   React.useEffect(() => {
@@ -260,7 +355,10 @@ const NovelSimulation = () => {
         <div className="space-y-4">
           {publishState === 'idle' && (
             <div className="flex gap-3">
-              <button className="flex-1 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl text-sm font-bold transition-colors">
+              <button 
+                onClick={() => onViewVideo?.('小说智能生成 - 预览')}
+                className="flex-1 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl text-sm font-bold transition-colors"
+              >
                 查看视频
               </button>
               <button 
@@ -301,6 +399,39 @@ const NovelSimulation = () => {
             </div>
           )}
 
+          {publishState === 'selecting_accounts' && (
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+              <div className="text-sm font-bold text-white mb-4 text-center">请选择发布账号</div>
+              <div className="grid grid-cols-2 gap-3 mb-5">
+                {['TikTok_Account_1', 'YouTube_Shorts_Main', 'Instagram_Reels_01', 'Facebook_Page_A'].map(acc => (
+                  <button 
+                    key={acc}
+                    onClick={() => toggleAccount(acc)}
+                    className={`p-3 rounded-xl border text-xs font-medium transition-all text-left flex items-center justify-between ${
+                      selectedAccounts.includes(acc)
+                        ? 'bg-blue-500/20 border-blue-500 text-blue-400'
+                        : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'
+                    }`}
+                  >
+                    <span className="truncate mr-2">{acc}</span>
+                    {selectedAccounts.includes(acc) && <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />}
+                  </button>
+                ))}
+              </div>
+              <button 
+                onClick={handleConfirmAccounts}
+                disabled={selectedAccounts.length === 0}
+                className={`w-full py-3 rounded-xl text-sm font-bold transition-all ${
+                  selectedAccounts.length > 0
+                    ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20'
+                    : 'bg-white/5 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                确认发布 ({selectedAccounts.length})
+              </button>
+            </div>
+          )}
+
           {publishState === 'publishing' && (
             <div className="flex flex-col items-center py-4 gap-3">
               <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
@@ -321,11 +452,11 @@ const NovelSimulation = () => {
                 <CheckCircle2 className="w-6 h-6 text-green-500" />
               </div>
               <div className="text-lg font-bold text-green-500">已发布成功</div>
+              <div className="text-xs text-gray-400">请去智能发布查看发布记录</div>
               <button 
-                onClick={() => setPublishState('idle')}
-                className="mt-2 px-6 py-2 bg-white/5 hover:bg-white/10 text-white rounded-full text-xs transition-colors"
+                className="mt-2 px-8 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-full text-sm font-bold shadow-lg shadow-green-600/20 transition-all"
               >
-                返回
+                去查看
               </button>
             </div>
           )}
@@ -545,13 +676,14 @@ const AuthSimulation = () => {
   );
 };
 
-const EditingSimulation = () => {
+const EditingSimulation = ({ onViewVideo }: { onViewVideo?: (title: string) => void }) => {
   const [progress, setProgress] = React.useState(0);
   const [tasks, setTasks] = React.useState(0);
   const [activeStep, setActiveStep] = React.useState(0);
   const [isComplete, setIsComplete] = React.useState(false);
-  const [publishState, setPublishState] = React.useState<'idle' | 'check_auth' | 'publishing' | 'configuring' | 'success'>('idle');
+  const [publishState, setPublishState] = React.useState<'idle' | 'check_auth' | 'selecting_accounts' | 'publishing' | 'configuring' | 'success'>('idle');
   const [incompleteBtnText, setIncompleteBtnText] = React.useState('未完成');
+  const [selectedAccounts, setSelectedAccounts] = React.useState<string[]>([]);
 
   React.useEffect(() => {
     const timer = setInterval(() => {
@@ -599,7 +731,18 @@ const EditingSimulation = () => {
   };
 
   const handleAuthorized = () => {
+    setPublishState('selecting_accounts');
+  };
+
+  const handleConfirmAccounts = () => {
+    if (selectedAccounts.length === 0) return;
     setPublishState('publishing');
+  };
+
+  const toggleAccount = (acc: string) => {
+    setSelectedAccounts(prev => 
+      prev.includes(acc) ? prev.filter(a => a !== acc) : [...prev, acc]
+    );
   };
 
   React.useEffect(() => {
@@ -704,7 +847,10 @@ const EditingSimulation = () => {
         <div className="space-y-4 pt-4 border-t border-white/5">
           {publishState === 'idle' && (
             <div className="flex gap-3">
-              <button className="flex-1 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm font-bold text-white transition-all flex items-center justify-center gap-2">
+              <button 
+                onClick={() => onViewVideo?.('PolarClaw - 预览')}
+                className="flex-1 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm font-bold text-white transition-all flex items-center justify-center gap-2"
+              >
                 <Video className="w-4 h-4" />
                 查看视频
               </button>
@@ -747,6 +893,39 @@ const EditingSimulation = () => {
             </div>
           )}
 
+          {publishState === 'selecting_accounts' && (
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+              <div className="text-sm font-bold text-white mb-4 text-center">请选择发布账号</div>
+              <div className="grid grid-cols-2 gap-3 mb-5">
+                {['TikTok_Drama_01', 'YouTube_Drama_Main', 'Kwai_Shorts_Pro', 'Douyin_Drama_A'].map(acc => (
+                  <button 
+                    key={acc}
+                    onClick={() => toggleAccount(acc)}
+                    className={`p-3 rounded-xl border text-xs font-medium transition-all text-left flex items-center justify-between ${
+                      selectedAccounts.includes(acc)
+                        ? 'bg-purple-500/20 border-purple-500 text-purple-400'
+                        : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'
+                    }`}
+                  >
+                    <span className="truncate mr-2">{acc}</span>
+                    {selectedAccounts.includes(acc) && <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />}
+                  </button>
+                ))}
+              </div>
+              <button 
+                onClick={handleConfirmAccounts}
+                disabled={selectedAccounts.length === 0}
+                className={`w-full py-3 rounded-xl text-sm font-bold transition-all ${
+                  selectedAccounts.length > 0
+                    ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg shadow-red-600/20'
+                    : 'bg-white/5 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                确认发布 ({selectedAccounts.length})
+              </button>
+            </div>
+          )}
+
           {publishState === 'publishing' && (
             <div className="flex flex-col items-center py-4 gap-3">
               <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
@@ -767,11 +946,11 @@ const EditingSimulation = () => {
                 <CheckCircle2 className="w-6 h-6 text-green-500" />
               </div>
               <div className="text-lg font-bold text-green-500">已发布成功</div>
+              <div className="text-xs text-gray-400">请去智能发布查看发布记录</div>
               <button 
-                onClick={() => setPublishState('idle')}
-                className="mt-2 px-6 py-2 bg-white/5 hover:bg-white/10 text-white rounded-full text-xs transition-colors"
+                className="mt-2 px-8 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-full text-sm font-bold shadow-lg shadow-green-600/20 transition-all"
               >
-                返回
+                去查看
               </button>
             </div>
           )}
@@ -891,6 +1070,8 @@ const Sidebar = ({ currentView, setView, dramaCredits, novelGenerations }: { cur
 export default function App() {
   const [view, setView] = useState<View>('home');
   const [isPolarClawClaimed, setIsPolarClawClaimed] = useState(false);
+  const [isVideoPlayerOpen, setIsVideoPlayerOpen] = useState(false);
+  const [currentVideoTitle, setCurrentVideoTitle] = useState('');
   const [isPersonalityModalOpen, setIsPersonalityModalOpen] = useState(false);
   const [personalityText, setPersonalityText] = useState('');
   const [selectedPersonality, setSelectedPersonality] = useState<string | null>(null);
@@ -902,8 +1083,9 @@ export default function App() {
   const [isMediaLibraryOpen, setIsMediaLibraryOpen] = useState(false);
   const [dramaCredits, setDramaCredits] = useState(30);
   const [novelGenerations, setNovelGenerations] = useState(5);
+  const [attachedFile, setAttachedFile] = useState<{ name: string, type: 'video' | 'novel' } | null>(null);
 
-  const handleSelectNovel = () => {
+  const handleSelectNovel = (title?: string) => {
     setIsMediaModalOpen(false);
     
     if (novelGenerations <= 0) {
@@ -916,22 +1098,11 @@ export default function App() {
       return;
     }
 
-    const newUserMsg: Message = { role: 'user', content: NOVEL_TEXT };
-    setMessages(prev => [...prev, newUserMsg]);
-    setNovelGenerations(prev => prev - 1);
-    
-    setTimeout(() => {
-      const aiMsg: Message = {
-        role: 'assistant',
-        content: '收到小说内容！正在为您深度解析剧情并生成视频...',
-        isPolarClaw: true,
-        type: 'novel_simulation'
-      };
-      setMessages(prev => [...prev, aiMsg]);
-    }, 800);
+    const novelContent = title ? `《${title}》\n\n${NOVEL_TEXT.slice(0, 300)}...` : NOVEL_TEXT;
+    setInputText(novelContent);
   };
 
-  const handleSelectDrama = () => {
+  const handleSelectDrama = (title?: string) => {
     setIsMediaModalOpen(false);
 
     if (dramaCredits < 10) {
@@ -944,19 +1115,7 @@ export default function App() {
       return;
     }
 
-    const newUserMsg: Message = { role: 'user', content: '我已选好短剧，请开始生成。' };
-    setMessages(prev => [...prev, newUserMsg]);
-    setDramaCredits(prev => prev - 10);
-    
-    setTimeout(() => {
-      const aiMsg: Message = {
-        role: 'assistant',
-        content: '正在为您生成短剧视频...',
-        isPolarClaw: true,
-        type: 'editing_simulation'
-      };
-      setMessages(prev => [...prev, aiMsg]);
-    }, 600);
+    setAttachedFile({ name: title ? `${title}.mp4` : '选定短剧.mp4', type: 'video' });
   };
 
   const handleConfirmPersonality = () => {
@@ -982,31 +1141,48 @@ export default function App() {
   };
 
   const handleSend = () => {
-    if (!inputText.trim()) return;
+    if (!inputText.trim() && !attachedFile) return;
     
-    const newUserMsg: Message = { role: 'user', content: inputText };
+    const content = attachedFile ? `[视频文件: ${attachedFile.name}]` : inputText;
+    const newUserMsg: Message = { role: 'user', content };
     setMessages([...messages, newUserMsg]);
+    
+    // Deduct credits
+    if (attachedFile) {
+      setDramaCredits(prev => prev - 10);
+    } else if (inputText.startsWith('《') || inputText === NOVEL_TEXT) {
+      setNovelGenerations(prev => prev - 1);
+    }
+
     setInputText('');
+    setAttachedFile(null);
     if (view !== 'polarclaw') setView('chat');
 
     // Simulate AI Response
     setTimeout(() => {
       let aiMsg: Message;
       
-      if (inputText === NOVEL_TEXT) {
+      if (content.startsWith('[视频文件:')) {
+        aiMsg = {
+          role: 'assistant',
+          content: '正在为您生成短剧视频...',
+          isPolarClaw: true,
+          type: 'editing_simulation'
+        };
+      } else if (content.startsWith('《') || content === NOVEL_TEXT) {
         aiMsg = {
           role: 'assistant',
           content: '收到小说内容！正在为您深度解析剧情并生成视频...',
           isPolarClaw: true,
           type: 'novel_simulation'
         };
-      } else if (inputText.includes('小说')) {
+      } else if (content.includes('小说')) {
         aiMsg = {
           role: 'assistant',
           content: "好的，请点击左下角的 '+' 按钮点击小说素材库，我将立即为您生成小说视频。",
           isPolarClaw: true
         };
-      } else if (inputText.includes('剪辑') || inputText.includes('短剧')) {
+      } else if (content.includes('剪辑') || content.includes('短剧')) {
         aiMsg = {
           role: 'assistant',
           content: "好的，请点击左下角的 '+' 按钮点击上传视频或点击短剧素材库，我将立即为您开启剪辑流程。",
@@ -1183,15 +1359,35 @@ export default function App() {
                                   ? 'bg-white/10 text-white' 
                                   : 'bg-white/5 border border-white/5 text-gray-200'
                               }`}>
-                                {msg.type === 'editing_simulation' ? (
-                                  <EditingSimulation />
-                                ) : msg.type === 'novel_simulation' ? (
-                                  <NovelSimulation />
-                                ) : msg.type === 'auth_simulation' ? (
-                                  <AuthSimulation />
-                                ) : (
-                                  <div className="whitespace-pre-wrap">{msg.content}</div>
-                                )}
+                                  {msg.type === 'editing_simulation' ? (
+                                    <EditingSimulation onViewVideo={(title) => {
+                                      setCurrentVideoTitle(title);
+                                      setIsVideoPlayerOpen(true);
+                                    }} />
+                                  ) : msg.type === 'novel_simulation' ? (
+                                    <NovelSimulation onViewVideo={(title) => {
+                                      setCurrentVideoTitle(title);
+                                      setIsVideoPlayerOpen(true);
+                                    }} />
+                                  ) : msg.type === 'auth_simulation' ? (
+                                    <AuthSimulation />
+                                  ) : (
+                                    <div className="whitespace-pre-wrap">
+                                      {msg.content.startsWith('[视频文件:') ? (
+                                        <div className="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/10 min-w-[200px]">
+                                          <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center shrink-0">
+                                            <Video className="w-6 h-6 text-blue-400" />
+                                          </div>
+                                          <div className="flex flex-col overflow-hidden">
+                                            <span className="text-sm font-medium text-gray-200 truncate">{msg.content.replace('[视频文件: ', '').replace(']', '')}</span>
+                                            <span className="text-xs text-gray-500">视频文件</span>
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        msg.content
+                                      )}
+                                    </div>
+                                  )}
                               </div>
                               {msg.role === 'user' && (
                                 <div className="w-10 h-10 rounded-full bg-gray-800 overflow-hidden shrink-0">
@@ -1353,13 +1549,30 @@ export default function App() {
           <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-3xl px-4 z-50">
             {view === 'polarclaw' ? (
               <div className="bg-[#1a1a1a] border border-white/10 rounded-[28px] p-6 shadow-2xl flex flex-col gap-6">
+                {attachedFile && (
+                  <div className="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/10 self-start relative group">
+                    <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center shrink-0">
+                      <Video className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <div className="flex flex-col overflow-hidden pr-6">
+                      <span className="text-sm font-medium text-gray-200 truncate max-w-[150px]">{attachedFile.name}</span>
+                      <span className="text-xs text-gray-500">已选择视频</span>
+                    </div>
+                    <button 
+                      onClick={() => setAttachedFile(null)}
+                      className="absolute top-1 right-1 p-1 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/60"
+                    >
+                      <X className="w-3 h-3 text-gray-400" />
+                    </button>
+                  </div>
+                )}
                 <div className="flex items-center gap-4">
                   <input 
                     type="text"
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                    placeholder="可以问我任何问题，你想聊点什么？"
+                    placeholder={attachedFile ? "添加描述或直接发送..." : "可以问我任何问题，你想聊点什么？"}
                     className="w-full bg-transparent border-none focus:ring-0 text-gray-400 text-lg p-0 placeholder:text-gray-500"
                   />
                 </div>
@@ -1396,41 +1609,55 @@ export default function App() {
                 </div>
               </div>
             ) : (
-              <div className={`relative flex items-center gap-3 p-2 rounded-[24px] border shadow-2xl transition-all bg-[#1a1a1a]/80 backdrop-blur-xl border-white/10 text-white`}>
-                <input 
-                  type="text"
-                  value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                  placeholder="问我任何问题..."
-                  className="flex-1 bg-transparent border-none focus:ring-0 text-sm py-2 pl-4"
-                />
-                
-                <div className="flex items-center gap-2 pr-2">
-                  <button 
-                    onClick={() => setView('polarclaw')}
-                    className="px-3 py-1.5 bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/20 rounded-full text-xs font-bold text-orange-500 flex items-center gap-1 transition-all"
-                  >
-                    🦞 PolarClaw
-                  </button>
+              <div className={`relative flex flex-col gap-2 p-2 rounded-[24px] border shadow-2xl transition-all bg-[#1a1a1a]/80 backdrop-blur-xl border-white/10 text-white`}>
+                {attachedFile && (
+                  <div className="flex items-center gap-2 bg-white/5 p-2 rounded-xl border border-white/10 self-start ml-2 mt-1 relative group">
+                    <Video className="w-4 h-4 text-blue-400" />
+                    <span className="text-xs font-medium text-gray-200 truncate max-w-[120px]">{attachedFile.name}</span>
+                    <button 
+                      onClick={() => setAttachedFile(null)}
+                      className="p-0.5 hover:bg-white/10 rounded-full transition-colors"
+                    >
+                      <X className="w-3 h-3 text-gray-500" />
+                    </button>
+                  </div>
+                )}
+                <div className="flex items-center gap-3">
+                  <input 
+                    type="text"
+                    value={inputText}
+                    onChange={(e) => setInputText(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                    placeholder={attachedFile ? "添加描述或直接发送..." : "问我任何问题..."}
+                    className="flex-1 bg-transparent border-none focus:ring-0 text-sm py-2 pl-4"
+                  />
                   
-                  <button 
-                    onClick={() => setIsMediaModalOpen(true)}
-                    className="p-2 rounded-full transition-colors hover:bg-white/5 text-gray-400"
-                  >
-                    <Plus className="w-5 h-5" />
-                  </button>
-                  
-                  <button 
-                    onClick={handleSend}
-                    className={`p-2 rounded-full transition-all ${
-                      inputText.trim() 
-                        ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' 
-                        : 'bg-white/10 text-gray-400'
-                    }`}
-                  >
-                    <Send className="w-5 h-5" />
-                  </button>
+                  <div className="flex items-center gap-2 pr-2">
+                    <button 
+                      onClick={() => setView('polarclaw')}
+                      className="px-3 py-1.5 bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/20 rounded-full text-xs font-bold text-orange-500 flex items-center gap-1 transition-all"
+                    >
+                      🦞 PolarClaw
+                    </button>
+                    
+                    <button 
+                      onClick={() => setIsMediaModalOpen(true)}
+                      className="p-2 rounded-full transition-colors hover:bg-white/5 text-gray-400"
+                    >
+                      <Plus className="w-5 h-5" />
+                    </button>
+                    
+                    <button 
+                      onClick={handleSend}
+                      className={`p-2 rounded-full transition-all ${
+                        inputText.trim() || attachedFile
+                          ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' 
+                          : 'bg-white/10 text-gray-400'
+                      }`}
+                    >
+                      <Send className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
@@ -1451,9 +1678,9 @@ export default function App() {
                 initial={{ scale: 0.9, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                className="relative w-full max-w-2xl bg-[#1a1a1a] border border-white/10 rounded-3xl overflow-hidden shadow-2xl"
+                className="relative w-full max-w-5xl bg-[#1a1a1a] border border-white/10 rounded-3xl overflow-hidden shadow-2xl"
               >
-                <div className="p-6">
+                <div className="p-8">
                   <div className="flex items-center justify-between mb-8">
                     <div className="flex gap-8">
                       <button 
@@ -1500,17 +1727,7 @@ export default function App() {
 
                           setIsMediaModalOpen(false);
                           setIsWaitingForUpload(false);
-                          setDramaCredits(prev => prev - 10);
-                          // Add simulation message
-                          setTimeout(() => {
-                            const simulationMsg: Message = {
-                              role: 'assistant',
-                              content: '正在处理视频...',
-                              isPolarClaw: true,
-                              type: 'editing_simulation'
-                            };
-                            setMessages(prev => [...prev, simulationMsg]);
-                          }, 500);
+                          setAttachedFile({ name: '本地视频素材.mp4', type: 'video' });
                         }
                       }}
                       className="bg-[#242424] border-2 border-dashed border-white/10 rounded-2xl p-12 flex flex-col items-center justify-center gap-4 group hover:border-orange-500/50 transition-colors cursor-pointer"
@@ -1528,95 +1745,179 @@ export default function App() {
                     </div>
                   ) : activeMediaTab === 'library' ? (
                     <div className="flex flex-col gap-6">
-                      <div className="relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                        <input 
-                          type="text"
-                          placeholder="请输入短剧ID"
-                          className="w-full bg-[#242424] border border-white/5 rounded-2xl py-4 pl-12 pr-24 text-gray-200 focus:outline-none focus:border-orange-500/50 transition-colors"
-                        />
-                        <button className="absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2 bg-gradient-to-r from-orange-500 to-pink-600 rounded-xl text-sm font-bold text-white shadow-lg shadow-orange-500/20">
-                          去选剧
+                      {/* Search Bar */}
+                      <div className="relative flex gap-3">
+                        <div className="relative flex-1">
+                          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                          <input 
+                            type="text"
+                            placeholder="请输入短剧名称"
+                            className="w-full bg-[#242424] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-gray-200 focus:outline-none focus:border-orange-500/50 transition-colors"
+                          />
+                        </div>
+                        <button className="px-10 py-4 bg-gradient-to-r from-orange-500 to-pink-600 rounded-2xl text-lg font-bold text-white shadow-lg shadow-orange-500/20">
+                          搜索
                         </button>
                       </div>
 
-                      <div className="flex items-center justify-between px-1">
-                        <div className="text-xs text-gray-500">
-                          支持剧场：KalosTV、SnackShort、GoodShort、MoboReels、TouchShort、FlickReels
+                      {/* Filters */}
+                      <div className="flex flex-col gap-4">
+                        <div className="flex items-center gap-4">
+                          <span className="text-sm text-gray-500 shrink-0">剧场</span>
+                          <div className="flex flex-wrap gap-2">
+                            {['KalosTV', 'SnackShort', 'GoodShort', 'MoboReels', 'TouchShort', 'FlickReels'].map((t, i) => (
+                              <button key={t} className={`px-4 py-1.5 rounded-full text-sm transition-all ${i === 0 ? 'bg-orange-500/20 text-orange-500 border border-orange-500/30' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-transparent'}`}>
+                                {t}
+                              </button>
+                            ))}
+                          </div>
                         </div>
-                        <div className="text-xs font-bold text-orange-500 bg-orange-500/10 px-2 py-1 rounded-lg">
+                        <div className="flex items-center gap-4">
+                          <span className="text-sm text-gray-500 shrink-0">语种</span>
+                          <div className="flex flex-wrap gap-2">
+                            {['全部', '英文', '印尼', '西班牙语', '法语', '泰语', '葡萄牙语', '韩语', '日语', '阿拉伯语', '德语', '俄语', '意大利语', '菲律宾语', '越南语', '印地语', '马来语', '土耳其语', '繁体中文', '罗马尼亚语', '波兰语', '捷克语'].map((l, i) => (
+                              <button key={l} className={`px-4 py-1.5 rounded-full text-sm transition-all ${i === 0 ? 'bg-orange-500/20 text-orange-500 border border-orange-500/30' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-transparent'}`}>
+                                {l}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Grid */}
+                      <div className="grid grid-cols-3 gap-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                        {[
+                          { title: "حب العم اللامتناهي", theater: "KalosTV" },
+                          { title: "حبيبته تعود", theater: "KalosTV" },
+                          { title: "(Dubbed)Married to the...", theater: "KalosTV" },
+                          { title: "The Single Mom and H...", theater: "KalosTV" },
+                          { title: "The Thorn In His Rose", theater: "KalosTV" },
+                          { title: "Back to the '80s", theater: "KalosTV" },
+                          { title: "Stand Aside, Impostor", theater: "KalosTV" },
+                          { title: "Her Comeback", theater: "KalosTV" },
+                          { title: "The Billionaire I Dumpe...", theater: "KalosTV" }
+                        ].map((item, i) => (
+                          <div key={i} className="bg-white/5 rounded-2xl p-4 border border-white/5 hover:border-white/10 transition-all group">
+                            <div className="flex gap-4">
+                              <div className="w-20 h-28 rounded-xl overflow-hidden shrink-0">
+                                <img src={`https://picsum.photos/seed/drama${i}/200/280`} alt={item.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                              </div>
+                              <div className="flex flex-col justify-between py-1">
+                                <div>
+                                  <div className="text-sm font-bold text-gray-200 line-clamp-2 mb-1">{item.title}</div>
+                                  <div className="text-xs text-gray-500">{item.theater}</div>
+                                </div>
+                                <button 
+                                  onClick={() => handleSelectDrama(item.title)}
+                                  className="px-4 py-1.5 bg-gradient-to-r from-orange-500 to-pink-600 rounded-lg text-xs font-bold text-white shadow-lg shadow-orange-500/20 hover:scale-105 active:scale-95 transition-all"
+                                >
+                                  选择
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Footer */}
+                      <div className="flex items-center justify-between mt-2">
+                        <div className="flex gap-4">
+                          <button className="px-6 py-2 bg-white/5 rounded-full text-sm text-gray-500 hover:text-white transition-colors">上一页</button>
+                          <div className="flex items-center text-sm text-gray-400">1 / 764</div>
+                          <button className="px-6 py-2 bg-white/5 rounded-full text-sm text-gray-500 hover:text-white transition-colors">下一页</button>
+                        </div>
+                        <div className="text-xs font-bold text-orange-500 bg-orange-500/10 px-3 py-1.5 rounded-lg">
                           今日已消耗积分：{30 - dramaCredits} / 30
                         </div>
                       </div>
-
-                      <div className="relative aspect-video rounded-2xl overflow-hidden bg-white/5 group">
-                        <img 
-                          src="https://picsum.photos/seed/drama/800/450" 
-                          alt="drama library" 
-                          className="w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity"
-                          referrerPolicy="no-referrer"
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-24 h-24 bg-pink-500/20 rounded-full flex items-center justify-center border border-pink-500/50 animate-pulse">
-                            <div className="w-16 h-16 bg-pink-500 rounded-2xl flex items-center justify-center shadow-lg shadow-pink-500/50">
-                              <Layout className="w-8 h-8 text-white" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <button 
-                        onClick={handleSelectDrama}
-                        className="w-full py-4 bg-gradient-to-r from-orange-500 to-pink-600 rounded-2xl text-white font-bold shadow-lg shadow-orange-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-                      >
-                        发送 <ChevronLeft className="w-4 h-4 rotate-180" />
-                      </button>
                     </div>
                   ) : (
                     <div className="flex flex-col gap-6">
-                      <div className="relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                        <input 
-                          type="text"
-                          placeholder="请输入小说ID"
-                          className="w-full bg-[#242424] border border-white/5 rounded-2xl py-4 pl-12 pr-24 text-gray-200 focus:outline-none focus:border-blue-500/50 transition-colors"
-                        />
-                        <button className="absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-xl text-sm font-bold text-white shadow-lg shadow-blue-500/20">
-                          去选小说
+                      {/* Search Bar */}
+                      <div className="relative flex gap-3">
+                        <div className="relative flex-1">
+                          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                          <input 
+                            type="text"
+                            placeholder="请输入小说名称"
+                            className="w-full bg-[#242424] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-gray-200 focus:outline-none focus:border-blue-500/50 transition-colors"
+                          />
+                        </div>
+                        <button className="px-10 py-4 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-2xl text-lg font-bold text-white shadow-lg shadow-blue-500/20">
+                          搜索
                         </button>
                       </div>
 
-                      <div className="flex items-center justify-between px-1">
-                        <div className="text-xs text-gray-500">
-                          支持语种：美国
+                      {/* Filters */}
+                      <div className="flex flex-col gap-4">
+                        <div className="flex items-center gap-4">
+                          <span className="text-sm text-gray-500 shrink-0">剧场</span>
+                          <div className="flex flex-wrap gap-2">
+                            {['所有小说剧场', 'NovelShort', 'Novelgo', 'WebNovel', 'PlotNovel', 'NovelMaster', 'GoodNovel', 'MyFiction', 'MotoNovel', 'NovelLia', 'SnackShort'].map((t, i) => (
+                              <button key={t} className={`px-4 py-1.5 rounded-full text-sm transition-all ${i === 0 ? 'bg-orange-500/20 text-orange-500 border border-orange-500/30' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-transparent'}`}>
+                                {t}
+                              </button>
+                            ))}
+                          </div>
                         </div>
-                        <div className="text-xs font-bold text-blue-500 bg-blue-500/10 px-2 py-1 rounded-lg">
-                          今日已生成次数：{5 - novelGenerations} / 5
-                        </div>
-                      </div>
-
-                      <div className="relative aspect-video rounded-2xl overflow-hidden bg-white/5 group">
-                        <img 
-                          src="https://picsum.photos/seed/novel/800/450" 
-                          alt="novel library" 
-                          className="w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity"
-                          referrerPolicy="no-referrer"
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-24 h-24 bg-blue-500/20 rounded-full flex items-center justify-center border border-blue-500/50 animate-pulse">
-                            <div className="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/50">
-                              <FileText className="w-8 h-8 text-white" />
-                            </div>
+                        <div className="flex items-center gap-4">
+                          <span className="text-sm text-gray-500 shrink-0">语种</span>
+                          <div className="flex flex-wrap gap-2">
+                            {['英语'].map((l, i) => (
+                              <button key={l} className={`px-4 py-1.5 rounded-full text-sm transition-all ${i === 0 ? 'bg-orange-500/20 text-orange-500 border border-orange-500/30' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-transparent'}`}>
+                                {l}
+                              </button>
+                            ))}
                           </div>
                         </div>
                       </div>
 
-                      <button 
-                        onClick={handleSelectNovel}
-                        className="w-full py-4 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-2xl text-white font-bold shadow-lg shadow-blue-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-                      >
-                        发送 <ChevronLeft className="w-4 h-4 rotate-180" />
-                      </button>
+                      {/* Grid */}
+                      <div className="grid grid-cols-3 gap-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                        {[
+                          "Never Coming Back",
+                          "Restore My Hearing an...",
+                          "Humiliated by My Wife'...",
+                          "Fake Rich, Real Ruin Af...",
+                          "He Faked Amnesia to ...",
+                          "His First Love Was My ...",
+                          "Her Baby Between Us",
+                          "The Proposal That Was...",
+                          "Love fades away, we n..."
+                        ].map((title, i) => (
+                          <div key={i} className="bg-white/5 rounded-2xl p-4 border border-white/5 hover:border-white/10 transition-all group">
+                            <div className="flex gap-4">
+                              <div className="w-20 h-28 rounded-xl overflow-hidden shrink-0">
+                                <img src={`https://picsum.photos/seed/novel${i}/200/280`} alt={title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                              </div>
+                              <div className="flex flex-col justify-between py-1">
+                                <div>
+                                  <div className="text-sm font-bold text-gray-200 line-clamp-2 mb-1">{title}</div>
+                                  <div className="text-xs text-gray-500">Novel Library</div>
+                                </div>
+                                <button 
+                                  onClick={() => handleSelectNovel(title)}
+                                  className="px-4 py-1.5 bg-gradient-to-r from-orange-500 to-pink-600 rounded-lg text-xs font-bold text-white shadow-lg shadow-orange-500/20 hover:scale-105 active:scale-95 transition-all"
+                                >
+                                  选择
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Footer */}
+                      <div className="flex items-center justify-between mt-2">
+                        <div className="flex gap-4">
+                          <button className="px-6 py-2 bg-white/5 rounded-full text-sm text-gray-500 hover:text-white transition-colors">上一页</button>
+                          <div className="flex items-center text-sm text-gray-400">1 / 3819</div>
+                          <button className="px-6 py-2 bg-white/5 rounded-full text-sm text-gray-500 hover:text-white transition-colors">下一页</button>
+                        </div>
+                        <div className="text-xs font-bold text-blue-500 bg-blue-500/10 px-3 py-1.5 rounded-lg">
+                          今日已生成次数：{5 - novelGenerations} / 5
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -1725,6 +2026,11 @@ export default function App() {
           )}
         </AnimatePresence>
       </main>
+      <VideoPlayerModal 
+        isOpen={isVideoPlayerOpen} 
+        onClose={() => setIsVideoPlayerOpen(false)} 
+        title={currentVideoTitle} 
+      />
     </div>
   );
 }
