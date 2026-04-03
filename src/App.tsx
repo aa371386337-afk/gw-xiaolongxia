@@ -186,6 +186,156 @@ const VideoPlayerModal = ({ isOpen, onClose, title }: { isOpen: boolean, onClose
   );
 };
 
+const NovelPurchaseModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
+  const [isApplied, setIsApplied] = React.useState(false);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[400] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-md bg-[#1a1a1a] border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
+        <button 
+          onClick={onClose}
+          className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-all z-10"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        <div className="p-8 flex flex-col items-center text-center">
+          <div className="w-16 h-16 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-6 border border-blue-500/30">
+            <Sparkles className="w-8 h-8 text-blue-400" />
+          </div>
+          
+          <h3 className="text-xl font-bold text-white mb-4">购买次数功能即将上线</h3>
+          
+          <p className="text-sm text-gray-400 leading-relaxed mb-8">
+            你本日/当前可用的免费小说生成次数已全部使用。购买次数功能即将上线，可先提交开通申请。
+          </p>
+
+          {!isApplied ? (
+            <button 
+              onClick={() => setIsApplied(true)}
+              className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20"
+            >
+              申请购买次数
+            </button>
+          ) : (
+            <div className="w-full py-3.5 bg-green-500/10 border border-green-500/20 text-green-500 rounded-xl font-bold flex items-center justify-center gap-2">
+              <CheckCircle2 className="w-5 h-5" />
+              已提交申请
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const DramaPurchaseModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
+  if (!isOpen) return null;
+
+  const options = [
+    { credits: 100, price: 10 },
+    { credits: 300, price: 30 },
+    { credits: 500, price: 50, bonus: 200, timer: true },
+    { credits: 1000, price: 100, bonus: 300, timer: true },
+    { credits: 5000, price: 500, bonus: 300 },
+    { credits: 10000, price: 1000 },
+  ];
+
+  return (
+    <div className="fixed inset-0 z-[400] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} />
+      <div className="relative w-full max-w-6xl bg-[#1a1a1e] border border-white/10 rounded-[32px] overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+        {/* Header */}
+        <div className="p-8 flex items-center justify-between border-b border-white/5">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-orange-500/50">
+              <img src="https://picsum.photos/seed/avatar/100/100" alt="avatar" referrerPolicy="no-referrer" />
+            </div>
+            <div>
+              <div className="text-white font-bold text-lg tracking-tight">猪猪侠</div>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-gray-500 text-xs">我的积分</span>
+                <div className="bg-orange-500/10 border border-orange-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <div className="w-3 h-3 bg-orange-500 rounded-full flex items-center justify-center">
+                    <span className="text-[8px] text-white font-bold">P</span>
+                  </div>
+                  <span className="text-orange-500 text-xs font-bold">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-all">
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="p-8 overflow-y-auto custom-scrollbar">
+          <div className="mb-8">
+            <div className="text-xs text-gray-500 leading-relaxed">
+              温馨提示：积分不可转增与提现，充值后有效期为1年，不支持退换或反向兑换人民币。<span className="text-pink-500 cursor-pointer ml-2 hover:underline">积分规则</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {options.map((opt, i) => (
+              <div key={i} className="bg-white/5 border border-white/10 rounded-3xl p-8 flex flex-col relative group hover:border-orange-500/30 transition-all">
+                {opt.bonus && (
+                  <div className="absolute -top-3 right-8 px-3 py-1 bg-purple-600 text-white text-[10px] font-bold rounded-full shadow-lg z-10">
+                    + {opt.bonus}
+                  </div>
+                )}
+                
+                <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-orange-500/20 rounded-full flex items-center justify-center">
+                      <div className="w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center">
+                        <span className="text-[10px] text-white font-bold">P</span>
+                      </div>
+                    </div>
+                    <span className="text-3xl font-black text-white">{opt.credits}</span>
+                  </div>
+                  <div className="text-2xl font-bold text-white">
+                    <span className="text-sm mr-1 opacity-50 font-normal">¥</span>{opt.price}
+                  </div>
+                </div>
+
+                {opt.timer && (
+                  <div className="flex items-center gap-2 mb-6">
+                    <div className="flex items-center gap-1">
+                      <div className="bg-gray-800 px-2 py-1 rounded text-white text-xs font-mono">0</div>
+                      <span className="text-gray-500 text-[10px]">天</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="bg-gray-800 px-2 py-1 rounded text-white text-xs font-mono">4</div>
+                      <span className="text-gray-500 text-[10px]">时</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="bg-gray-800 px-2 py-1 rounded text-white text-xs font-mono">37</div>
+                      <span className="text-gray-500 text-[10px]">分</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="bg-gray-800 px-2 py-1 rounded text-white text-xs font-mono">21</div>
+                      <span className="text-gray-500 text-[10px]">秒</span>
+                    </div>
+                  </div>
+                )}
+
+                <button className="w-full py-4 bg-gradient-to-r from-orange-400 to-pink-600 text-white font-bold rounded-2xl shadow-lg shadow-pink-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all mt-auto">
+                  立即购买
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const NovelSimulation = ({ onViewVideo }: { onViewVideo?: (title: string) => void }) => {
   const [progress, setProgress] = React.useState(0);
   const [tasks, setTasks] = React.useState(0);
@@ -272,9 +422,9 @@ const NovelSimulation = ({ onViewVideo }: { onViewVideo?: (title: string) => voi
   }, [publishState]);
 
   const steps = [
-    { label: '剧情拆解', icon: '📖' },
-    { label: '角色建模', icon: '👤' },
-    { label: '场景生成', icon: '🖼️' },
+    { label: '提炼卖点', icon: '💡' },
+    { label: '生成图片', icon: '🖼️' },
+    { label: '分镜生成', icon: '🎬' },
     { label: '语音合成', icon: '🎙️' },
     { label: '视频合成', icon: '🎞️' },
   ];
@@ -960,7 +1110,7 @@ const EditingSimulation = ({ onViewVideo }: { onViewVideo?: (title: string) => v
   );
 };
 
-const Sidebar = ({ currentView, setView, dramaCredits, novelGenerations }: { currentView: View, setView: (v: View) => void, dramaCredits: number, novelGenerations: number }) => {
+const Sidebar = ({ currentView, setView, dramaCredits, novelGenerations, onPurchaseDrama, onPurchaseNovel }: { currentView: View, setView: (v: View) => void, dramaCredits: number, novelGenerations: number, onPurchaseDrama: () => void, onPurchaseNovel: () => void }) => {
   const isExpanded = currentView !== 'home';
 
   return (
@@ -1040,7 +1190,15 @@ const Sidebar = ({ currentView, setView, dramaCredits, novelGenerations }: { cur
             <div className="bg-white/5 rounded-2xl p-4 flex flex-col gap-3">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-bold text-gray-400">短剧已消耗积分</span>
-                <span className="text-[10px] font-bold text-orange-500">{30 - dramaCredits} / 30</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold text-orange-500">{30 - dramaCredits} / 30</span>
+                  <button 
+                    onClick={onPurchaseDrama}
+                    className="text-[9px] bg-orange-500/20 text-orange-500 px-1.5 py-0.5 rounded hover:bg-orange-500/30 transition-all border border-orange-500/20"
+                  >
+                    去购买
+                  </button>
+                </div>
               </div>
               <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                 <div 
@@ -1050,7 +1208,15 @@ const Sidebar = ({ currentView, setView, dramaCredits, novelGenerations }: { cur
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-bold text-gray-400">小说已生成次数</span>
-                <span className="text-[10px] font-bold text-blue-500">{5 - novelGenerations} / 5</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold text-blue-500">{5 - novelGenerations} / 5</span>
+                  <button 
+                    onClick={onPurchaseNovel}
+                    className="text-[9px] bg-blue-500/20 text-blue-500 px-1.5 py-0.5 rounded hover:bg-blue-500/30 transition-all border border-blue-500/20"
+                  >
+                    去购买
+                  </button>
+                </div>
               </div>
               <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                 <div 
@@ -1071,6 +1237,8 @@ export default function App() {
   const [view, setView] = useState<View>('home');
   const [isPolarClawClaimed, setIsPolarClawClaimed] = useState(false);
   const [isVideoPlayerOpen, setIsVideoPlayerOpen] = useState(false);
+  const [isNovelPurchaseModalOpen, setIsNovelPurchaseModalOpen] = useState(false);
+  const [isDramaPurchaseModalOpen, setIsDramaPurchaseModalOpen] = useState(false);
   const [currentVideoTitle, setCurrentVideoTitle] = useState('');
   const [isPersonalityModalOpen, setIsPersonalityModalOpen] = useState(false);
   const [personalityText, setPersonalityText] = useState('');
@@ -1091,7 +1259,7 @@ export default function App() {
     if (novelGenerations <= 0) {
       const aiMsg: Message = {
         role: 'assistant',
-        content: '抱歉，您的今日小说生成次数已用完。次数将在每日 00:00 自动重置，请明天再试。',
+        content: '抱歉，您的今日小说生成次数已用完。次数将在每日 00:00 自动重置，请明天再试。[去购买]',
         isPolarClaw: true
       };
       setMessages(prev => [...prev, aiMsg]);
@@ -1108,7 +1276,7 @@ export default function App() {
     if (dramaCredits < 10) {
       const aiMsg: Message = {
         role: 'assistant',
-        content: '抱歉，您的今日短剧剪辑积分不足。积分将在每日 00:00 自动重置，请明天再试。',
+        content: '抱歉，您的今日短剧剪辑积分不足。积分将在每日 00:00 自动重置，请明天再试。[去购买]',
         isPolarClaw: true
       };
       setMessages(prev => [...prev, aiMsg]);
@@ -1212,7 +1380,16 @@ export default function App() {
   return (
     <div className={`flex h-screen bg-[#050505] text-white font-sans overflow-hidden`}>
       {/* Sidebar only on secondary pages */}
-      {view !== 'home' && <Sidebar currentView={view} setView={handleSetView} dramaCredits={dramaCredits} novelGenerations={novelGenerations} />}
+      {view !== 'home' && (
+        <Sidebar 
+          currentView={view} 
+          setView={handleSetView} 
+          dramaCredits={dramaCredits} 
+          novelGenerations={novelGenerations}
+          onPurchaseDrama={() => setIsDramaPurchaseModalOpen(true)}
+          onPurchaseNovel={() => setIsNovelPurchaseModalOpen(true)}
+        />
+      )}
 
       <main className="flex-1 relative flex flex-col">
         {/* Background Glow */}
@@ -1382,6 +1559,22 @@ export default function App() {
                                             <span className="text-sm font-medium text-gray-200 truncate">{msg.content.replace('[视频文件: ', '').replace(']', '')}</span>
                                             <span className="text-xs text-gray-500">视频文件</span>
                                           </div>
+                                        </div>
+                                      ) : msg.content.includes('[去购买]') ? (
+                                        <div className="flex flex-col gap-2">
+                                          <div>{msg.content.replace('[去购买]', '')}</div>
+                                          <button 
+                                            onClick={() => {
+                                              if (msg.content.includes('小说')) {
+                                                setIsNovelPurchaseModalOpen(true);
+                                              } else {
+                                                setIsDramaPurchaseModalOpen(true);
+                                              }
+                                            }}
+                                            className="w-fit px-4 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 rounded-lg text-xs font-bold border border-blue-500/30 transition-all"
+                                          >
+                                            去购买
+                                          </button>
                                         </div>
                                       ) : (
                                         msg.content
@@ -2030,6 +2223,14 @@ export default function App() {
         isOpen={isVideoPlayerOpen} 
         onClose={() => setIsVideoPlayerOpen(false)} 
         title={currentVideoTitle} 
+      />
+      <NovelPurchaseModal 
+        isOpen={isNovelPurchaseModalOpen}
+        onClose={() => setIsNovelPurchaseModalOpen(false)}
+      />
+      <DramaPurchaseModal 
+        isOpen={isDramaPurchaseModalOpen}
+        onClose={() => setIsDramaPurchaseModalOpen(false)}
       />
     </div>
   );
